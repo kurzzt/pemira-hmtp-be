@@ -1,11 +1,10 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/user.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Query } from 'express-serve-static-core';
-import { faker, tr } from '@faker-js/faker';
-import { genParam } from 'utils/common';
+import { faker } from '@faker-js/faker';
 import { MailService } from 'src/mail/mail.service';
 
 import * as bcrypt from 'bcrypt';
@@ -93,44 +92,19 @@ export class UserService {
   }
 
   async findAllNonAdmin(q: Query): Promise<User[]> {
-    const filter: Record<string, any> = {
-      nim: String,
-      email: String,
-      name: String,
-      yearClass: Number,
-      search: ['nim', 'email', 'name'],
-    };
-
-    const { limit, skip, params, sort } = genParam(q, filter);
     const param = { isAdmin: false };
-    const response = await this.userModel
-      .find({ ...param, ...params }, '-__v')
-      .limit(limit)
-      .skip(skip)
-      .sort(sort);
+    const response = await this.userModel.find({ ...param })
     return response;
   }
 
   async findAllAdmin(q: Query): Promise<User[]> {
-    const filter: Record<string, any> = {
-      nim: String,
-      email: String,
-      name: String,
-      yearClass: Number,
-      search: ['nim', 'email', 'name'],
-    };
-    const { limit, skip, params, sort } = genParam(q, filter);
     const param = { isAdmin: true };
-    const response = await this.userModel
-      .find({ ...param, ...params }, '-vote -yearClass -__v')
-      .limit(limit)
-      .skip(skip)
-      .sort(sort);
+    const response = await this.userModel.find({ ...param }, '-vote -yearClass')
     return response;
   }
 
   async findUserById(id: string): Promise<User> {
-    const response = await this.userModel.findById(id, '-__v');
+    const response = await this.userModel.findById(id);
     return response;
   }
 

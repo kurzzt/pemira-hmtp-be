@@ -5,7 +5,6 @@ import { Model } from 'mongoose';
 import { CreatePairDto } from './dto/create-pair.dto';
 import { UpdatePairDto } from './dto/update-pair.dto';
 import { Query } from 'express-serve-static-core';
-import { genParam } from 'utils/common';
 import { VoteService } from 'src/vote/vote.service';
 
 @Injectable()
@@ -49,17 +48,12 @@ export class PairService {
   }
 
   async findPairById(id: string): Promise<Pair> {
-    const response = await this.pairModel.findById(id, '-__v');
+    const response = await this.pairModel.findById(id);
     return response;
   }
 
   async findAllPair(q: Query): Promise<Pair[]> {
-    const { limit, skip, sort } = genParam(q);
-    const response = await this.pairModel
-      .find({}, '-__v')
-      .limit(limit)
-      .skip(skip)
-      .sort(sort);
+    const response = await this.pairModel.find({})
     return response;
   }
 

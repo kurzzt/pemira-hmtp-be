@@ -5,7 +5,7 @@ import { Model, Types } from 'mongoose';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { Query } from 'express-serve-static-core';
 import { UserService } from 'src/user/user.service';
-import { flattenObject, genParam } from 'utils/common';
+import { flattenObject } from 'utils/common';
 
 @Injectable()
 export class VoteService {
@@ -46,6 +46,11 @@ export class VoteService {
     return response
   }
 
+  async deleteVoteWithUserId(id: Types.ObjectId){
+    const response = await this.voteModel.deleteMany({ user: id })
+    return response
+  }
+
   async voteInvalid(id: string): Promise<Vote> {
     const response = await this.voteModel.findByIdAndUpdate(
       id,
@@ -57,28 +62,18 @@ export class VoteService {
 
   async findVoteById(id: string) {
     const response = await this.voteModel
-      .findById(id, '-__v')
-      .populate('user', '-__v')
-      .populate('vote', '-__v')
-    // return flattenObject(response);
-    return response;
+      .findById(id)
+      .populate('user', '-_id')
+      .populate('vote', '-_id')
+    return flattenObject(response);
+    // return response;
   }
 
   async findAllVote(q: Query) {
-    const filter = {
-      user: Object,
-      vote: Object,
-      isValid: Boolean
-    };
-
-    const { limit, skip, params, sort } = genParam(q, filter);
     const response = await this.voteModel
-      .find(params)
+      .find({})
       .populate('user', '_id name nim yearClass')
       .populate('vote', '_id number')
-      .limit(limit)
-      .skip(skip)
-      .sort(sort);
     return response.map(x => flattenObject(x))
   }
 
