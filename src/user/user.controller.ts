@@ -17,6 +17,7 @@ import { User } from './schema/user.schema';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Query as ExpressQuery } from 'express-serve-static-core';
 import { ValidateUserParamId } from './validate-param-user.pipe';
+import { SendBulkCredDto } from './dto/send-bulk-cred.dto';
 
 @Controller('user')
 export class UserController {
@@ -52,6 +53,13 @@ export class UserController {
     @Param('id', ValidateUserParamId) id: string
   ){
     return this.userService.sendCredentials(id)
+  }
+
+  @Post('sendBulkCred')
+  async sendBulk(
+    @Body() body: SendBulkCredDto
+  ){
+    return this.userService.sendBulkCred(body)
   }
 
   @Delete(':id')

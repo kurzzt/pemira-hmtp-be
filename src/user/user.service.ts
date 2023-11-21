@@ -10,6 +10,7 @@ import { MailService } from 'src/mail/mail.service';
 import * as bcrypt from 'bcrypt';
 import toStream = require('buffer-to-stream');
 import * as csv from 'csv-parser';
+import { SendBulkCredDto } from './dto/send-bulk-cred.dto';
 
 @Injectable()
 export class UserService {
@@ -119,6 +120,16 @@ export class UserService {
     }
 
     return response;
+  }
+
+  async sendBulkCred(body: SendBulkCredDto){
+    const { user } = body
+
+    await user.forEach((userId, _) => {
+      this.sendCredentials(userId)
+    })
+
+    return "success"
   }
 
   async updateVoteField(id: string, voted: boolean){
