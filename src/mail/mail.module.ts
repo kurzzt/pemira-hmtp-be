@@ -9,9 +9,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     MailerModule.forRootAsync({
       useFactory: () => ({
         transport: {
-          host: process.env.MAIL_HOST,
-          port: parseInt(process.env.MAIL_PORT),
-          secure: false,
+          service: 'gmail',
           auth: {
             user: process.env.MAIL_USER,
             pass: process.env.MAIL_PASS,
