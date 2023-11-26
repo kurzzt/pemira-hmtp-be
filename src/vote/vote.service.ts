@@ -83,7 +83,9 @@ export class VoteService {
   }
 
   async stat_groupbyPair() {
-    const response = await this.voteModel.aggregate([{ $group: {
+    const response = await this.voteModel.aggregate([
+    { $match: { isValid: true } },
+    { $group: {
       _id: '$vote',
       count: { $count : {} }
     }},
