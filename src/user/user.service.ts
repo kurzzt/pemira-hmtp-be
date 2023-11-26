@@ -6,6 +6,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { Query } from 'express-serve-static-core';
 import { faker } from '@faker-js/faker';
 import { MailService } from 'src/mail/mail.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { DeleteBulkDto } from './dto/delete-bulk-user.dto';
 
 import * as bcrypt from 'bcrypt';
 import toStream = require('buffer-to-stream');
@@ -18,7 +20,7 @@ export class UserService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private mailService: MailService,
-  ) {}
+  ) { }
 
   async validateNIM(nim: string) {
     return await this.userModel.findOne({ nim });
@@ -78,10 +80,10 @@ export class UserService {
 
   async bulkData(file: Express.Multer.File) {
     const csvData = await this.parseCsvToJSON(file);
-    try{
+    try {
       const res = await this.userModel.insertMany(csvData);
       return res;
-    }catch(err){
+    } catch (err) {
       throw new BadRequestException("Make sure all email and nim values are unique")
     }
   }
@@ -92,14 +94,33 @@ export class UserService {
     return response;
   }
 
-  async findAllNonAdmin(q: Query): Promise<User[]> {
+  async deleteBulk(body: DeleteBulkDto) {
+    const { user } = body
+    const response = await this.userModel.deleteMany(
+      { _id: { $in: user } },
+      { new: true, runValidators: true }
+    )
+    return response
+  }
+  async updateUserById(id: string, body: UpdateUserDto): Promise<User> {
+    const { nim, email, name, yearClass } = body
+
+    const response = await this.userModel.findByIdAndUpdate(
+      id,
+      { nim, email, name, yearClass },
+      { new: true, runValidators: true }
+    )
+    return response
+  }
+
+  async findAllNonAdmin(q: Query) {
     const param = { isAdmin: false };
     const response = await this.userModel.find({ ...param })
     return response;
   }
 
-  async findAllAdmin(q: Query): Promise<User[]> {
-    const param = { isAdmin: true };
+  async findAllAdmin(q: Query, user: string): Promise<User[]> {
+    const param = { isAdmin: true, _id: { $ne: user } };
     const response = await this.userModel.find({ ...param }, '-vote -yearClass')
     return response;
   }
