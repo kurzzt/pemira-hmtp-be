@@ -17,7 +17,7 @@ import { User } from 'src/auth/user.decorator';
 
 @Controller('vote')
 export class VoteController {
-  constructor(private readonly voteService: VoteService) {}
+  constructor(private readonly voteService: VoteService) { }
 
   @Post()
   async create(
@@ -32,6 +32,11 @@ export class VoteController {
     @Param('id', ValidateVoteParamId) id: string,
   ): Promise<Vote> {
     return this.voteService.voteInvalid(id);
+  }
+
+  @Delete('reset')
+  async reset() {
+    return this.voteService.deleteAll();
   }
 
   @Delete(':id')

@@ -13,6 +13,7 @@ import { IsEmailUniqueConstraint } from './user/uniqueEmail.decorator';
 import { IsNIMUniqueConstraint } from './user/uniqueNIM.decorator';
 import { UserModule } from './user/user.module';
 import { VoteModule } from './vote/vote.module';
+import { ConfigureModule } from './configure/configure.module';
 const normalize = require('@meanie/mongoose-to-json');
 
 @Module({
@@ -46,6 +47,7 @@ const normalize = require('@meanie/mongoose-to-json');
     VoteModule,
     CloudinaryModule,
     MailModule,
+    ConfigureModule,
   ],
   controllers: [AppController],
   providers: [

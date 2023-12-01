@@ -35,6 +35,10 @@ export class VoteService {
     return response
   }
 
+  async deleteAll() {
+    return await this.voteModel.deleteMany({})
+  }
+
   async deleteVote(id: string): Promise<Vote> {
     const response = await this.voteModel.findByIdAndDelete(id);
     await this.userService.updateVoteField((response.user).toString(), false)
@@ -84,27 +88,33 @@ export class VoteService {
 
   async stat_groupbyPair() {
     const response = await this.voteModel.aggregate([
-    { $match: { isValid: true } },
-    { $group: {
-      _id: '$vote',
-      count: { $count : {} }
-    }},
-    { $lookup: {
-       from: 'pairs',
-       localField: '_id',
-       foreignField: '_id',
-       as: 'result'
-    }},
-    {
-      $replaceRoot: { newRoot: { $mergeObjects: [ { $arrayElemAt: [ "$result", 0 ] }, "$$ROOT" ] } }
-    },
-    { $project: { 
-      _id: 0,
-      leader: '$leader',
-      name: { $concat: [ "Paslon ", { $toString: "$number" } ] },
-      voteCount: '$count'
-    } }
-   ])
+      { $match: { isValid: true } },
+      {
+        $group: {
+          _id: '$vote',
+          count: { $count: {} }
+        }
+      },
+      {
+        $lookup: {
+          from: 'pairs',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'result'
+        }
+      },
+      {
+        $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ["$result", 0] }, "$$ROOT"] } }
+      },
+      {
+        $project: {
+          _id: 0,
+          leader: '$leader',
+          name: { $concat: ["Paslon ", { $toString: "$number" }] },
+          voteCount: '$count'
+        }
+      }
+    ])
     return response
   }
 }

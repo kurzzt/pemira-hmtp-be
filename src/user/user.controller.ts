@@ -41,7 +41,7 @@ export class UserController {
           fileType: '.csv',
         })
         .addMaxSizeValidator({
-          maxSize: 10000000,
+          maxSize: 50000000,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,

@@ -40,6 +40,10 @@ export class PairService {
     return response;
   }
 
+  async deleteAll() {
+    return await this.pairModel.deleteMany({})
+  }
+
   // NOTE: DELETE PAIR WILL DELETE VOTE WITH PAIR ID
   async deletePairById(id: string): Promise<Pair> {
     const response = await this.pairModel.findByIdAndDelete(id);

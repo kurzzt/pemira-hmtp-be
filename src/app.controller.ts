@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, ParseFilePipeBuilder, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, ParseFilePipeBuilder, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LoginDto } from './auth/login.dto';
@@ -31,7 +31,7 @@ export class AppController {
           fileType: new RegExp(/(jpg|jpeg|png)$/),
         })
         .addMaxSizeValidator({
-          maxSize: 10000000 //bytes
+          maxSize: 50000000 //bytes
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
@@ -44,5 +44,10 @@ export class AppController {
   @Get('dashboard')
   async dashboard() {
     return this.appService.dashboard()
+  }
+
+  @Delete('reset-all')
+  async reset(){
+    return this.appService.reset_db()
   }
 }

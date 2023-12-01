@@ -102,6 +102,11 @@ export class UserService {
     )
     return response
   }
+
+  async deleteAllNonAdmin(){
+    return await this.userModel.deleteMany({ isAdmin: false })
+  }
+  
   async updateUserById(id: string, body: UpdateUserDto): Promise<User> {
     const { nim, email, name, yearClass } = body
 
