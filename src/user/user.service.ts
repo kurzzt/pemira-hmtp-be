@@ -167,6 +167,11 @@ export class UserService {
     return response
   }
 
+  async updateAllVoteField(){
+    const response = await this.userModel.updateMany({}, { voted: false } )
+    return response
+  }
+
   async login(email_nim: string): Promise<User> {
     const response = await this.userModel.findOne({
       $or: [{ email: email_nim }, { nim: email_nim }],

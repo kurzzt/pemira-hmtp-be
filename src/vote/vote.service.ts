@@ -36,6 +36,7 @@ export class VoteService {
   }
 
   async deleteAll() {
+    await this.userService.updateAllVoteField()
     return await this.voteModel.deleteMany({})
   }
 
