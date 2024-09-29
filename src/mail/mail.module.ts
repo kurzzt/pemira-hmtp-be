@@ -16,7 +16,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           },
         },
         defaults: {
-          from: `"Panitia PEMIRA HMTP 2023" <${process.env.MAIL_FROM}>`
+          from: `"Panitia PEMIRA HMTP 2024" <${process.env.MAIL_FROM}>`
         },
         template: {
           dir: join(__dirname, '../../mail/templates'),

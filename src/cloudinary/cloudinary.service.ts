@@ -9,7 +9,7 @@ export class CloudinaryService {
     folder: string = ""
 ): Promise<UploadApiResponse | UploadApiErrorResponse>{
     return new Promise<UploadApiResponse | UploadApiErrorResponse>((resolve, reject) => {
-        const upload = v2.uploader.upload_stream({folder : `pemira-2023/${folder}`}, (error, result) => {
+        const upload = v2.uploader.upload_stream({folder : `pemira-hmtp/${folder}`}, (error, result) => {
             if (error) return reject(error);
             resolve(result);
         })
