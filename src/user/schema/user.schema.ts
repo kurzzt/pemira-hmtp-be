@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
-import { Vote } from 'src/vote/schema/vote.schema';
 
 @Schema({
   timestamps: true,

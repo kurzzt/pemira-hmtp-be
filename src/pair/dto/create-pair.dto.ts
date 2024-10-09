@@ -27,6 +27,5 @@ export class CreatePairDto implements Pair {
   readonly number;
 
   @IsEmpty()
-  @IsNumber()
   readonly yearNomination: number;
 }

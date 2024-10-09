@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsDefined,
   IsEmail,
   IsEmpty,
   IsNotEmpty,
@@ -47,6 +48,5 @@ export class CreateUserDto implements User {
   readonly password: string;
 
   @IsEmpty()
-  @IsBoolean()
   readonly voted: boolean
 }
