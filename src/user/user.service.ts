@@ -78,6 +78,30 @@ export class UserService {
     });
   }
 
+  private async parseCsvAndValidate(file: Express.Multer.File) {
+    const stream = toStream(file.buffer);
+
+    const jsonRows = [];
+    return new Promise((resolve, reject) => {
+      stream
+        .pipe(csv())
+        .on('data', (row) => {
+
+          // per data
+          // validate apakah semua attribute ada atau tidak
+          // validate tipe data dan rules dari tiap value attribute
+          // validate apakah ada data duplicate atau tidak 
+          jsonRows.push(row);
+        })
+        .on('end', () => {
+          resolve(jsonRows);
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+    });
+  }
+
   async bulkData(file: Express.Multer.File) {
     const csvData = await this.parseCsvToJSON(file);
     try {

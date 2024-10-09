@@ -1,6 +1,7 @@
-import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Pair } from '../schema/pair.schema';
 
-export class CreatePairDto {
+export class CreatePairDto implements Pair {
   @IsNotEmpty()
   @IsString()
   readonly leader: string;
@@ -24,4 +25,8 @@ export class CreatePairDto {
   @IsNotEmpty()
   @IsNumber()
   readonly number;
+
+  @IsEmpty()
+  @IsNumber()
+  readonly yearNomination: number;
 }

@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsEmail,
+  IsEmpty,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -11,8 +12,9 @@ import {
 } from 'class-validator';
 import { IsNIMUnique } from '../uniqueNIM.decorator';
 import { IsEmailUnique } from '../uniqueEmail.decorator';
+import { User } from '../schema/user.schema';
 
-export class CreateUserDto {
+export class CreateUserDto implements User {
   @IsNotEmpty()
   @IsBoolean()
   readonly isAdmin: boolean;
@@ -43,4 +45,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   readonly password: string;
+
+  @IsEmpty()
+  @IsBoolean()
+  readonly voted: boolean
 }
