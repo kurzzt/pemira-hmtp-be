@@ -82,33 +82,81 @@ export class UserService {
     const stream = toStream(file.buffer);
 
     const jsonRows = [];
+    const errors = [];
+    const seenEmails = new Map(); 
+    const seenNims = new Map();
+    let index = 2;
+
     return new Promise((resolve, reject) => {
       stream
-        .pipe(csv())
-        .on('data', (row) => {
+      .pipe(csv())
+      .on('data', (row) => {
+        const errorMessages = [];
 
-          // per data
-          // validate apakah semua attribute ada atau tidak
-          // validate tipe data dan rules dari tiap value attribute
-          // validate apakah ada data duplicate atau tidak 
+        row.email = row.email ? row.email.trim() : "";
+        row.nim = row.nim ? row.nim.trim() : "";
+        
+        // Validate required attributes
+        if (!row.name) errorMessages.push("Name is required.");
+        if (!row.nim) errorMessages.push("NIM is required.");
+        if (!row.yearClass) errorMessages.push("Year class is required.");
+        if (!row.email) errorMessages.push("Email is required.");
+
+        // Validate data types and format
+        if (row.nim && !/^\d{14}$/.test(row.nim)) {
+            errorMessages.push("NIM must be 14 digits.");
+        }
+        if (row.email && !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(row.email)) {
+            errorMessages.push(`Invalid email format with value '${row.email}' on index ${index}`);
+        }
+        if (row.yearClass && !/^\d{4}$/.test(row.yearClass)) {
+            errorMessages.push(`Year class must be a 4-digit number on index ${index}`);
+        }
+
+        // Validate uniqueness of email and nim
+        if (seenEmails.has(row.email)) {
+          const firstIndex = seenEmails.get(row.email);
+          errorMessages.push(`Duplicate email with value '${row.email}'. First occurrence at index ${firstIndex}, duplicate on index ${index}`);
+        } else {
+          seenEmails.set(row.email, index); // Store email with its index
+        }
+
+        if (seenNims.has(row.nim)) {
+          const firstIndex = seenNims.get(row.nim);
+          errorMessages.push(`Duplicate NIM with value '${row.nim}'. First occurrence at index ${firstIndex}, duplicate on index ${index}`);
+        } else {
+          seenNims.set(row.nim, index); // Store NIM with its index
+        }
+
+        if (errorMessages.length > 0) {
+          errorMessages.map((d) => errors.push(d));
+        } else {
           jsonRows.push(row);
-        })
-        .on('end', () => {
+        }
+
+        index++;
+      })
+      .on('end', () => {
+        if (errors.length > 0) {
+          reject(errors);
+        } else {
           resolve(jsonRows);
-        })
-        .on('error', (error) => {
-          reject(error);
-        });
+        }
+      })
+      .on('error', (error) => {
+        reject(error);
+      });
     });
   }
 
+
   async bulkData(file: Express.Multer.File) {
-    const csvData = await this.parseCsvToJSON(file);
     try {
+      const csvData = await this.parseCsvAndValidate(file);
       const res = await this.userModel.insertMany(csvData);
       return res;
     } catch (err) {
-      throw new BadRequestException("Make sure all email and nim values are unique")
+      throw new BadRequestException(err)
     }
   }
 
@@ -160,7 +208,7 @@ export class UserService {
   }
 
   async sendCredentials(id: string) {
-    const random_passwd = faker.string.sample(12);
+    const random_passwd = faker.string.alpha(12);
     const password = await bcrypt.hash(random_passwd, 10);
     const response = await this.userModel.findByIdAndUpdate(id, { password });
     try {
